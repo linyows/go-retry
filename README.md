@@ -4,7 +4,14 @@ go-retry
 A retry command by golang on CLI.
 
 [![Travis](https://img.shields.io/travis/linyows/go-retry.svg?style=flat-square)][travis]
+[![GitHub release](http://img.shields.io/github/release/linyows/go-retry.svg?style=flat-square)][release]
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)][license]
+[![Go Documentation](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)][godocs]
+
 [travis]: https://travis-ci.org/linyows/go-retry
+[release]: https://github.com/linyows/go-retry/releases
+[license]: https://github.com/linyows/go-retry/blob/master/LICENSE
+[godocs]: http://godoc.org/github.com/linyows/go-retry
 
 Description
 -----------
