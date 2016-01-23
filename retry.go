@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Retry returns exit status
 func Retry(cmd []string, ops Ops) int {
 	if ops.Verbose {
 		log.Printf("Command: %s", strings.Join(cmd, " "))

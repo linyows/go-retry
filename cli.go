@@ -9,14 +9,18 @@ import (
 )
 
 const (
-	ExitCodeOK    int = 0
+	// ExitCodeOK for success
+	ExitCodeOK int = 0
+	// ExitCodeError for error
 	ExitCodeError int = 1 + iota
 )
 
+// CLI is structure
 type CLI struct {
 	outStream, errStream io.Writer
 }
 
+// Run for retry
 func (cli *CLI) Run(args []string) int {
 	var arguments []string
 

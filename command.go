@@ -6,6 +6,7 @@ import (
 	"syscall"
 )
 
+// ExecCmd returns exit code
 func ExecCmd(c []string) int {
 	var cmd *exec.Cmd
 
