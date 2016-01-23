@@ -24,8 +24,6 @@ func ExecCmd(c []string) int {
 	if exiterr, ok := err.(*exec.ExitError); ok {
 		if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
 			return status.ExitStatus()
-		} else {
-			return ExitCodeError
 		}
 	}
 
