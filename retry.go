@@ -15,8 +15,10 @@ func Retry(cmd []string, ops Ops) int {
 		}
 	}
 
+	strCmd := strings.Join(cmd, " ")
+
 	if ops.Verbose {
-		log.Printf("Command: %s", strings.Join(cmd, " "))
+		log.Printf("Command: %s", strCmd)
 	}
 
 	exitStatus := ExecCmd(cmd)
@@ -40,7 +42,7 @@ func Retry(cmd []string, ops Ops) int {
 		time.Sleep(d)
 
 		if ops.Verbose {
-			log.Printf("Command: %s", strings.Join(cmd, " "))
+			log.Printf("Command: %s", strCmd)
 		}
 
 		exitStatus = ExecCmd(cmd)
