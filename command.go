@@ -9,8 +9,8 @@ import (
 	"github.com/mattn/go-shellwords"
 )
 
-// ExecCmd returns exit code
-func ExecCmd(c []string) int {
+// execCmd returns exit code
+func execCmd(c []string) int {
 	var cmd *exec.Cmd
 
 	if len(c) > 1 {
@@ -34,8 +34,8 @@ func ExecCmd(c []string) int {
 	return ExitCodeOK
 }
 
-// BuildShellCmd returns args as exec.Command
-func BuildShellCmd(args []string) ([]string, error) {
+// buildShellCmd returns args as exec.Command
+func buildShellCmd(args []string) ([]string, error) {
 	shell := os.Getenv("SHELL")
 	cmd := append([]string{shell, "-c"}, args...)
 

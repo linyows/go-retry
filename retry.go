@@ -10,7 +10,7 @@ import (
 func Retry(cmd []string, ops Ops) int {
 	if ops.UseShell {
 		var err error
-		if cmd, err = BuildShellCmd(cmd); err != nil {
+		if cmd, err = buildShellCmd(cmd); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -21,7 +21,7 @@ func Retry(cmd []string, ops Ops) int {
 		log.Printf("Command: %s", strCmd)
 	}
 
-	exitStatus := ExecCmd(cmd)
+	exitStatus := execCmd(cmd)
 	if ops.Verbose {
 		log.Printf("Exit status: %d", exitStatus)
 	}
@@ -45,7 +45,7 @@ func Retry(cmd []string, ops Ops) int {
 			log.Printf("Command: %s", strCmd)
 		}
 
-		exitStatus = ExecCmd(cmd)
+		exitStatus = execCmd(cmd)
 		if ops.Verbose {
 			log.Printf("Exit status: %d", exitStatus)
 		}
