@@ -3,7 +3,10 @@ package main
 import (
 	"os"
 	"os/exec"
+	"strings"
 	"syscall"
+
+	"github.com/mattn/go-shellwords"
 )
 
 // ExecCmd returns exit code
@@ -25,7 +28,20 @@ func ExecCmd(c []string) int {
 		if status, ok := exiterr.Sys().(syscall.WaitStatus); ok {
 			return status.ExitStatus()
 		}
+		return ExitCodeError
 	}
 
 	return ExitCodeOK
+}
+
+// BuildShellCmd returns args as exec.Command
+func BuildShellCmd(args []string) ([]string, error) {
+	shell := os.Getenv("SHELL")
+	cmd := append([]string{shell, "-c"}, args...)
+
+	s := shellwords.NewParser()
+	s.ParseEnv = true
+	s.ParseBacktick = true
+
+	return s.Parse(strings.Join(cmd, " "))
 }
