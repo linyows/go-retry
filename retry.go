@@ -8,6 +8,13 @@ import (
 
 // Retry returns exit status
 func Retry(cmd []string, ops Ops) int {
+	if ops.UseShell {
+		var err error
+		if cmd, err = BuildShellCmd(cmd); err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	if ops.Verbose {
 		log.Printf("Command: %s", strings.Join(cmd, " "))
 	}
