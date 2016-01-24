@@ -29,7 +29,6 @@ func (cli *CLI) Run(args []string) int {
 	f.IntVar(&cli.ops.Count, "count", 2, "Retry count")
 	f.IntVar(&cli.ops.Count, "c", 2, "Retry count(Short)")
 	f.BoolVar(&cli.ops.UseShell, "shell", false, "Use shell")
-	f.BoolVar(&cli.ops.UseShell, "s", false, "Use shell(Short)")
 	f.BoolVar(&cli.ops.Verbose, "verbose", false, "Print verbose log.")
 	f.BoolVar(&cli.ops.Version, "version", false, "Print version information and quit.")
 
