@@ -3,49 +3,116 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
-func TestRun_versionFlag(t *testing.T) {
-	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
-	cli := &CLI{outStream: outStream, errStream: errStream}
+var outStream, errStream bytes.Buffer
+var exampleCmd = "/usr/lib64/nagios/plugins/check_http -w 10 -c 15 -H localhost"
+
+type OKCommand struct{}
+
+func (o OKCommand) run(c []string) int {
+	fmt.Fprintln(&outStream, strings.Join(c, " "))
+	return 0
+}
+
+type NGCommand struct{}
+
+func (o NGCommand) run(c []string) int {
+	fmt.Fprintln(&errStream, "Error!")
+	return 1
+}
+
+func TestVersion(t *testing.T) {
+	outStream, errStream = *new(bytes.Buffer), *new(bytes.Buffer)
+	command = OKCommand{}
+
+	cli := &CLI{outStream: &outStream, errStream: &errStream}
 	args := strings.Split("./retry -version", " ")
 
-	status := cli.Run(args)
-	if status != ExitCodeOK {
-		t.Errorf("expected %d to eq %d", status, ExitCodeOK)
+	if status := cli.Run(args); status != ExitCodeOK {
+		t.Fatalf("expected %d, got %d.", ExitCodeOK, status)
 	}
 
 	expected := fmt.Sprintf("retry version %s", Version)
 	if !strings.Contains(errStream.String(), expected) {
-		t.Errorf("expected %q to eq %q", errStream.String(), expected)
+		t.Fatalf("expected %s, got %s.", expected, errStream.String())
 	}
 }
 
-func TestRun_intervalFlag(t *testing.T) {
-	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
-	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./retry -interval", " ")
+func TestInterval(t *testing.T) {
+	outStream, errStream = *new(bytes.Buffer), *new(bytes.Buffer)
+	command = NGCommand{}
 
+	cli := &CLI{outStream: &outStream, errStream: &errStream}
+	args := strings.Split("./retry -interval 5s "+exampleCmd, " ")
+
+	start := time.Now()
 	status := cli.Run(args)
-	_ = status
+	end := time.Now()
+
+	if status == ExitCodeOK {
+		t.Fatalf("expected not %d, got %d.", ExitCodeOK, status)
+	}
+
+	got := end.Sub(start).Seconds()
+	expected := 5.
+	if got < expected {
+		t.Errorf("expected %f sec more, but %f sec", expected, got)
+	}
 }
 
-func TestRun_countFlag(t *testing.T) {
-	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
-	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./retry -count", " ")
+func TestCount(t *testing.T) {
+	outStream, errStream = *new(bytes.Buffer), *new(bytes.Buffer)
+	command = NGCommand{}
 
-	status := cli.Run(args)
-	_ = status
+	cli := &CLI{outStream: &outStream, errStream: &errStream}
+	args := strings.Split("./retry -count 1 "+exampleCmd, " ")
+
+	if status := cli.Run(args); status == ExitCodeOK {
+		t.Fatalf("expected not %d, got %d.", ExitCodeOK, status)
+	}
+
+	expected := 2
+	if count := strings.Count(errStream.String(), "Error!"); count != expected {
+		t.Errorf("expected %q, got %q", expected, count)
+	}
 }
 
-func TestRun_verboseFlag(t *testing.T) {
-	outStream, errStream := new(bytes.Buffer), new(bytes.Buffer)
-	cli := &CLI{outStream: outStream, errStream: errStream}
-	args := strings.Split("./retry -verbose ls", " ")
+func TestShell(t *testing.T) {
+	outStream, errStream = *new(bytes.Buffer), *new(bytes.Buffer)
+	command = OKCommand{}
 
-	status := cli.Run(args)
-	_ = status
+	cli := &CLI{outStream: &outStream, errStream: &errStream}
+	os.Setenv("SHELL", "/bin/bash")
+	args := strings.Split("./retry -shell "+exampleCmd, " ")
+
+	if status := cli.Run(args); status != ExitCodeOK {
+		t.Fatalf("expected %d, got %d", ExitCodeOK, status)
+	}
+
+	expected := "/bin/bash -c " + exampleCmd + "\n"
+	if outStream.String() != expected {
+		t.Fatalf("expected %q, got %q", expected, outStream.String())
+	}
+}
+
+func TestNotShell(t *testing.T) {
+	outStream, errStream = *new(bytes.Buffer), *new(bytes.Buffer)
+	command = OKCommand{}
+
+	cli := &CLI{outStream: &outStream, errStream: &errStream}
+	args := strings.Split("./retry "+exampleCmd, " ")
+
+	if status := cli.Run(args); status != ExitCodeOK {
+		t.Fatalf("expected %d, got %d", ExitCodeOK, status)
+	}
+
+	expected := exampleCmd + "\n"
+	if outStream.String() != expected {
+		t.Fatalf("expected %q, got %q", expected, outStream.String())
+	}
 }

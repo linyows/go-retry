@@ -4,46 +4,54 @@ import (
 	"flag"
 	"fmt"
 	"io"
-
-	"strings"
 )
 
 const (
-	ExitCodeOK    int = 0
+	// ExitCodeOK for success
+	ExitCodeOK int = 0
+	// ExitCodeError for error
 	ExitCodeError int = 1 + iota
 )
 
+// CLI is structure
 type CLI struct {
 	outStream, errStream io.Writer
+	ops                  Ops
 }
 
+// Run for retry
 func (cli *CLI) Run(args []string) int {
-	var arguments []string
+	f := flag.NewFlagSet(Name, flag.ContinueOnError)
+	f.SetOutput(cli.errStream)
 
-	flags := flag.NewFlagSet(Name, flag.ContinueOnError)
-	flags.SetOutput(cli.errStream)
+	f.StringVar(&cli.ops.Interval, "interval", "3s", "Retry interval")
+	f.StringVar(&cli.ops.Interval, "i", "3s", "Retry interval(Short)")
+	f.IntVar(&cli.ops.Count, "count", 2, "Retry count")
+	f.IntVar(&cli.ops.Count, "c", 2, "Retry count(Short)")
+	f.BoolVar(&cli.ops.UseShell, "shell", false, "Use shell")
+	f.BoolVar(&cli.ops.Verbose, "verbose", false, "Print verbose log.")
+	f.BoolVar(&cli.ops.Version, "version", false, "Print version information and quit.")
 
-	var ops Ops
-	flags.StringVar(&ops.Interval, "interval", "3s", "Retry interval")
-	flags.StringVar(&ops.Interval, "i", "3s", "Retry interval(Short)")
-	flags.IntVar(&ops.Count, "count", 2, "Retry count")
-	flags.IntVar(&ops.Count, "c", 2, "Retry count(Short)")
-	flags.BoolVar(&ops.Verbose, "verbose", false, "Print verbose log.")
-	flags.BoolVar(&ops.Version, "version", false, "Print version information and quit.")
-
-	if err := flags.Parse(args[1:]); err != nil {
+	if err := f.Parse(args[1:]); err != nil {
 		return ExitCodeError
 	}
 
-	if ops.Version {
+	if cli.ops.Version {
 		fmt.Fprintf(cli.errStream, "%s version %s\n", Name, Version)
 		return ExitCodeOK
 	}
 
-	for 0 < flags.NArg() {
-		arguments = append(arguments, strings.Fields(flags.Arg(0))...)
-		flags.Parse(flags.Args()[1:])
-	}
+	return cli.Retry(f.Args())
+}
 
-	return Retry(arguments, ops)
+// out
+func (cli *CLI) out(format string, a ...interface{}) {
+	if cli.ops.Verbose {
+		fmt.Fprintln(cli.outStream, fmt.Sprintf(format, a...))
+	}
+}
+
+// err
+func (cli *CLI) err(format string, a ...interface{}) {
+	fmt.Fprintln(cli.errStream, fmt.Sprintf(format, a...))
 }

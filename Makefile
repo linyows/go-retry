@@ -11,6 +11,7 @@ deps:
 	go get golang.org/x/tools/cmd/vet
 
 depsdev:
+	go get -u github.com/mattn/go-shellwords
 	go get -u github.com/mitchellh/gox
 	go get -u github.com/tcnksm/ghr
 

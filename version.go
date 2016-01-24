@@ -1,4 +1,7 @@
 package main
 
+// Name
 const Name string = "retry"
-const Version string = "0.1.0"
+
+// Version
+const Version string = "0.2.0"
