@@ -10,7 +10,7 @@ import (
 func (cli *CLI) Retry(cmd []string) int {
 	if cli.ops.UseShell {
 		var cmdParseErr error
-		if cmd, cmdParseErr = cli.buildShellCmd(cmd); cmdParseErr != nil {
+		if cmd, cmdParseErr = buildShellCmd(cmd); cmdParseErr != nil {
 			cli.err(fmt.Sprintf("%#v", cmdParseErr))
 			return ExitCodeError
 		}
@@ -19,7 +19,7 @@ func (cli *CLI) Retry(cmd []string) int {
 	strCmd := strings.Join(cmd, " ")
 	cli.out("Command: %s", strCmd)
 
-	exitStatus := cli.execCmd(cmd)
+	exitStatus := command.run(cmd)
 	cli.out("Exit status: %d", exitStatus)
 	if exitStatus == ExitCodeOK {
 		return ExitCodeOK
@@ -38,7 +38,7 @@ func (cli *CLI) Retry(cmd []string) int {
 
 		cli.out("Command: %s", strCmd)
 
-		exitStatus = cli.execCmd(cmd)
+		exitStatus = command.run(cmd)
 		cli.out("Exit status: %d", exitStatus)
 		if exitStatus == ExitCodeOK {
 			return ExitCodeOK

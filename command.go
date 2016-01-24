@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -9,8 +10,22 @@ import (
 	"github.com/mattn/go-shellwords"
 )
 
-// execCmd returns exit code
-func (cli *CLI) execCmd(c []string) int {
+// Command interface
+type Command interface {
+	run([]string) int
+}
+
+// RealCommand structure
+type RealCommand struct {
+	outStream io.Writer
+	errStream io.Writer
+}
+
+// command
+var command Command
+
+// run returns exit code
+func (r RealCommand) run(c []string) int {
 	var cmd *exec.Cmd
 
 	if len(c) > 1 {
@@ -19,8 +34,8 @@ func (cli *CLI) execCmd(c []string) int {
 		cmd = exec.Command(c[0])
 	}
 
-	cmd.Stdout = cli.outStream
-	cmd.Stderr = cli.errStream
+	cmd.Stdout = r.outStream
+	cmd.Stderr = r.errStream
 
 	err := cmd.Run()
 
@@ -35,7 +50,7 @@ func (cli *CLI) execCmd(c []string) int {
 }
 
 // buildShellCmd returns args as exec.Command
-func (cli *CLI) buildShellCmd(args []string) ([]string, error) {
+func buildShellCmd(args []string) ([]string, error) {
 	shell := os.Getenv("SHELL")
 	cmd := append([]string{shell, "-c"}, args...)
 
