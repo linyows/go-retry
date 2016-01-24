@@ -37,7 +37,7 @@ func TestVersion(t *testing.T) {
 
 	expected := fmt.Sprintf("retry version %s", Version)
 	if !strings.Contains(errStream.String(), expected) {
-		t.Fatalf("expected %d, got %d.", expected, errStream.String())
+		t.Fatalf("expected %s, got %s.", expected, errStream.String())
 	}
 }
 
