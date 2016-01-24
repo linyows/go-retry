@@ -10,7 +10,7 @@ import (
 )
 
 // execCmd returns exit code
-func execCmd(c []string) int {
+func (cli *CLI) execCmd(c []string) int {
 	var cmd *exec.Cmd
 
 	if len(c) > 1 {
@@ -19,8 +19,8 @@ func execCmd(c []string) int {
 		cmd = exec.Command(c[0])
 	}
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stdout = cli.outStream
+	cmd.Stderr = cli.errStream
 
 	err := cmd.Run()
 
@@ -35,7 +35,7 @@ func execCmd(c []string) int {
 }
 
 // buildShellCmd returns args as exec.Command
-func buildShellCmd(args []string) ([]string, error) {
+func (cli *CLI) buildShellCmd(args []string) ([]string, error) {
 	shell := os.Getenv("SHELL")
 	cmd := append([]string{shell, "-c"}, args...)
 

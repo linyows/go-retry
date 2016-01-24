@@ -16,6 +16,7 @@ const (
 // CLI is structure
 type CLI struct {
 	outStream, errStream io.Writer
+	ops                  Ops
 }
 
 // Run for retry
@@ -23,26 +24,25 @@ func (cli *CLI) Run(args []string) int {
 	f := flag.NewFlagSet(Name, flag.ContinueOnError)
 	f.SetOutput(cli.errStream)
 
-	var ops Ops
-	f.StringVar(&ops.Interval, "interval", "3s", "Retry interval")
-	f.StringVar(&ops.Interval, "i", "3s", "Retry interval(Short)")
-	f.IntVar(&ops.Count, "count", 2, "Retry count")
-	f.IntVar(&ops.Count, "c", 2, "Retry count(Short)")
-	f.BoolVar(&ops.UseShell, "shell", true, "Use shell")
-	f.BoolVar(&ops.UseShell, "s", true, "Use shell(Short)")
-	f.BoolVar(&ops.Verbose, "verbose", false, "Print verbose log.")
-	f.BoolVar(&ops.Version, "version", false, "Print version information and quit.")
+	f.StringVar(&cli.ops.Interval, "interval", "3s", "Retry interval")
+	f.StringVar(&cli.ops.Interval, "i", "3s", "Retry interval(Short)")
+	f.IntVar(&cli.ops.Count, "count", 2, "Retry count")
+	f.IntVar(&cli.ops.Count, "c", 2, "Retry count(Short)")
+	f.BoolVar(&cli.ops.UseShell, "shell", false, "Use shell")
+	f.BoolVar(&cli.ops.UseShell, "s", false, "Use shell(Short)")
+	f.BoolVar(&cli.ops.Verbose, "verbose", false, "Print verbose log.")
+	f.BoolVar(&cli.ops.Version, "version", false, "Print version information and quit.")
 
 	if err := f.Parse(args[1:]); err != nil {
 		return ExitCodeError
 	}
 
-	if ops.Version {
+	if cli.ops.Version {
 		fmt.Fprintf(cli.errStream, "%s version %s\n", Name, Version)
 		return ExitCodeOK
 	}
 
-	return Retry(f.Args(), ops)
+	return cli.Retry(f.Args())
 }
 
 // out
