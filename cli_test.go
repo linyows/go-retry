@@ -3,12 +3,14 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 	"time"
 )
 
 var outStream, errStream bytes.Buffer
+var exampleCmd = "/usr/lib64/nagios/plugins/check_http -w 10 -c 15 -H localhost"
 
 type OKCommand struct{}
 
@@ -46,7 +48,7 @@ func TestInterval(t *testing.T) {
 	command = NGCommand{}
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
-	args := strings.Split("./retry -interval 5s ls -las /tmp", " ")
+	args := strings.Split("./retry -interval 5s "+exampleCmd, " ")
 
 	start := time.Now()
 	status := cli.Run(args)
@@ -68,7 +70,7 @@ func TestCount(t *testing.T) {
 	command = NGCommand{}
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
-	args := strings.Split("./retry -count 1 ls -las /tmp", " ")
+	args := strings.Split("./retry -count 1 "+exampleCmd, " ")
 
 	if status := cli.Run(args); status == ExitCodeOK {
 		t.Fatalf("expected not %d, got %d.", ExitCodeOK, status)
@@ -85,14 +87,15 @@ func TestShell(t *testing.T) {
 	command = OKCommand{}
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
-	args := strings.Split("./retry -verbose -shell=true echo $HOME", " ")
+	os.Setenv("SHELL", "/bin/bash")
+	args := strings.Split("./retry -shell "+exampleCmd, " ")
 
 	if status := cli.Run(args); status != ExitCodeOK {
 		t.Fatalf("expected %d, got %d", ExitCodeOK, status)
 	}
 
-	expected := "sh -c echo"
-	if !strings.Contains(outStream.String(), expected) {
+	expected := "/bin/bash -c " + exampleCmd + "\n"
+	if outStream.String() != expected {
 		t.Fatalf("expected %q, got %q", expected, outStream.String())
 	}
 }
@@ -102,14 +105,14 @@ func TestNotShell(t *testing.T) {
 	command = OKCommand{}
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
-	args := strings.Split("./retry -verbose -shell=false echo $HOME", " ")
+	args := strings.Split("./retry "+exampleCmd, " ")
 
 	if status := cli.Run(args); status != ExitCodeOK {
 		t.Fatalf("expected %d, got %d", ExitCodeOK, status)
 	}
 
-	expected := "sh -c echo"
-	if strings.Contains(outStream.String(), expected) {
+	expected := exampleCmd + "\n"
+	if outStream.String() != expected {
 		t.Fatalf("expected %q, got %q", expected, outStream.String())
 	}
 }
