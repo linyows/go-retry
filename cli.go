@@ -44,3 +44,15 @@ func (cli *CLI) Run(args []string) int {
 
 	return Retry(f.Args(), ops)
 }
+
+// out
+func (cli *CLI) out(format string, a ...interface{}) {
+	if cli.ops.Verbose {
+		fmt.Fprintln(cli.outStream, fmt.Sprintf(format, a...))
+	}
+}
+
+// err
+func (cli *CLI) err(format string, a ...interface{}) {
+	fmt.Fprintln(cli.errStream, fmt.Sprintf(format, a...))
+}
