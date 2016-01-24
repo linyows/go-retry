@@ -22,7 +22,7 @@ Usage
 -----
 
 ```sh
-$ retry -i 5s -c 2 '/usr/lib64/nagios/plugins/check_http -w 10 -c 15 -H localhost'
+$ retry -i 5s -c 2 /usr/lib64/nagios/plugins/check_http -w 10 -c 15 -H localhost
 ```
 
 Install
