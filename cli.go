@@ -21,7 +21,7 @@ type CLI struct {
 }
 
 var usageText = `
-Usage: retry [options]
+Usage: retry [options] command [arguments]
 
 Options:`
 

@@ -38,7 +38,7 @@ func TestNoArguments(t *testing.T) {
 	}
 
 	expected := `
-Usage: retry [options]
+Usage: retry [options] command [arguments]
 
 Options:
   -c, --count=2        retry count
