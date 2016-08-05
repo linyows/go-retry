@@ -8,7 +8,6 @@ default: test
 deps:
 	go get -d -t ./...
 	go get golang.org/x/tools/cmd/cover
-	go get golang.org/x/tools/cmd/vet
 
 depsdev:
 	go get -u github.com/docker/docker/pkg/mflag
