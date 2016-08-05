@@ -26,15 +26,44 @@ func (o NGCommand) run(c []string) int {
 	return 1
 }
 
+func TestNoArguments(t *testing.T) {
+	outStream, errStream = *new(bytes.Buffer), *new(bytes.Buffer)
+	command = OKCommand{}
+
+	cli := &CLI{outStream: &outStream, errStream: &errStream}
+	args := strings.Split("./retry", " ")
+
+	if status := cli.Run(args); status != ExitCodeOK {
+		t.Fatalf("expected %d, got %d.", ExitCodeOK, status)
+	}
+
+	expected := `
+Usage: retry [options]
+
+Options:
+  -c, --count=2        retry count
+  -i, --interval=3s    retry interval
+  -l, --verbose        print verbose log
+  -s, --shell          use shell
+  -v, --version        print version information
+
+Example:
+  $ retry -i 5s -c 2 /usr/lib64/nagios/plugins/check_http -w 10 -c 15 -H localhost
+`
+	if !strings.Contains(errStream.String(), expected) {
+		t.Fatalf("expected %s, got %s.", expected, errStream.String())
+	}
+}
+
 func TestVersion(t *testing.T) {
 	outStream, errStream = *new(bytes.Buffer), *new(bytes.Buffer)
 	command = OKCommand{}
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
-	args := strings.Split("./retry -version", " ")
+	args := strings.Split("./retry --version", " ")
 
 	if status := cli.Run(args); status != ExitCodeOK {
-		t.Fatalf("expected %d, got %d.", ExitCodeOK, status)
+		t.Fatalf("expected %d, got %d.", ExitCodeError, status)
 	}
 
 	expected := fmt.Sprintf("retry version %s", Version)
@@ -48,7 +77,7 @@ func TestInterval(t *testing.T) {
 	command = NGCommand{}
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
-	args := strings.Split("./retry -interval 5s "+exampleCmd, " ")
+	args := strings.Split("./retry --interval 5s "+exampleCmd, " ")
 
 	start := time.Now()
 	status := cli.Run(args)
@@ -70,7 +99,7 @@ func TestCount(t *testing.T) {
 	command = NGCommand{}
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
-	args := strings.Split("./retry -count 1 "+exampleCmd, " ")
+	args := strings.Split("./retry --count 1 "+exampleCmd, " ")
 
 	if status := cli.Run(args); status == ExitCodeOK {
 		t.Fatalf("expected not %d, got %d.", ExitCodeOK, status)
@@ -88,7 +117,7 @@ func TestShell(t *testing.T) {
 
 	cli := &CLI{outStream: &outStream, errStream: &errStream}
 	os.Setenv("SHELL", "/bin/bash")
-	args := strings.Split("./retry -shell "+exampleCmd, " ")
+	args := strings.Split("./retry --shell "+exampleCmd, " ")
 
 	if status := cli.Run(args); status != ExitCodeOK {
 		t.Fatalf("expected %d, got %d", ExitCodeOK, status)
