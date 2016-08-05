@@ -1,9 +1,10 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io"
+
+	flag "github.com/docker/docker/pkg/mflag"
 )
 
 const (
@@ -19,18 +20,32 @@ type CLI struct {
 	ops                  Ops
 }
 
+var usageText = `
+Usage: retry [options]
+
+Options:`
+
+var exampleText = `
+Example:
+  $ retry -i 5s -c 2 /usr/lib64/nagios/plugins/check_http -w 10 -c 15 -H localhost
+`
+
 // Run for retry
 func (cli *CLI) Run(args []string) int {
 	f := flag.NewFlagSet(Name, flag.ContinueOnError)
 	f.SetOutput(cli.errStream)
 
-	f.StringVar(&cli.ops.Interval, "interval", "3s", "Retry interval")
-	f.StringVar(&cli.ops.Interval, "i", "3s", "Retry interval(Short)")
-	f.IntVar(&cli.ops.Count, "count", 2, "Retry count")
-	f.IntVar(&cli.ops.Count, "c", 2, "Retry count(Short)")
-	f.BoolVar(&cli.ops.UseShell, "shell", false, "Use shell")
-	f.BoolVar(&cli.ops.Verbose, "verbose", false, "Print verbose log.")
-	f.BoolVar(&cli.ops.Version, "version", false, "Print version information and quit.")
+	f.Usage = func() {
+		fmt.Fprintf(cli.errStream, usageText)
+		f.PrintDefaults()
+		fmt.Fprint(cli.errStream, exampleText)
+	}
+
+	f.StringVar(&cli.ops.Interval, []string{"i", "-interval"}, "3s", "retry interval")
+	f.IntVar(&cli.ops.Count, []string{"c", "-count"}, 2, "retry count")
+	f.BoolVar(&cli.ops.UseShell, []string{"s", "-shell"}, false, "use shell")
+	f.BoolVar(&cli.ops.Verbose, []string{"l", "-verbose"}, false, "print verbose log")
+	f.BoolVar(&cli.ops.Version, []string{"v", "-version"}, false, "print version information")
 
 	if err := f.Parse(args[1:]); err != nil {
 		return ExitCodeError
@@ -38,6 +53,11 @@ func (cli *CLI) Run(args []string) int {
 
 	if cli.ops.Version {
 		fmt.Fprintf(cli.errStream, "%s version %s\n", Name, Version)
+		return ExitCodeOK
+	}
+
+	if len(f.Args()) == 0 {
+		f.Usage()
 		return ExitCodeOK
 	}
 
