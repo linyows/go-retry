@@ -31,7 +31,7 @@ func (r RealCommand) run(c []string) int {
 	if len(c) > 1 {
 		cmd = exec.Command(c[0], c[1:]...)
 	} else {
-		cmd = exec.Command(c[0])
+		return ExitCodeError
 	}
 
 	cmd.Stdout = r.outStream
