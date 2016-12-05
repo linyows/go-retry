@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	flag "github.com/docker/docker/pkg/mflag"
+	flag "github.com/linyows/mflag"
 )
 
 const (
@@ -33,12 +33,12 @@ Example:
 // Run for retry
 func (cli *CLI) Run(args []string) int {
 	f := flag.NewFlagSet(Name, flag.ContinueOnError)
-	f.SetOutput(cli.errStream)
+	f.SetOutput(cli.outStream)
 
 	f.Usage = func() {
-		fmt.Fprintf(cli.errStream, usageText)
+		fmt.Fprintf(cli.outStream, usageText)
 		f.PrintDefaults()
-		fmt.Fprint(cli.errStream, exampleText)
+		fmt.Fprint(cli.outStream, exampleText)
 	}
 
 	f.StringVar(&cli.ops.Interval, []string{"i", "-interval"}, "3s", "retry interval")
@@ -52,7 +52,7 @@ func (cli *CLI) Run(args []string) int {
 	}
 
 	if cli.ops.Version {
-		fmt.Fprintf(cli.errStream, "%s version %s\n", Name, Version)
+		fmt.Fprintf(cli.outStream, "%s version %s\n", Name, Version)
 		return ExitCodeOK
 	}
 

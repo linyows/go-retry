@@ -10,7 +10,7 @@ deps:
 	go get golang.org/x/tools/cmd/cover
 
 depsdev:
-	go get -u github.com/docker/docker/pkg/mflag
+	go get -u github.com/linyows/mflag
 	go get -u github.com/mattn/go-shellwords
 	go get -u github.com/mitchellh/gox
 	go get -u github.com/tcnksm/ghr

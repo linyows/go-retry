@@ -50,8 +50,8 @@ Options:
 Example:
   $ retry -i 5s -c 2 /usr/lib64/nagios/plugins/check_http -w 10 -c 15 -H localhost
 `
-	if !strings.Contains(errStream.String(), expected) {
-		t.Fatalf("expected %s, got %s.", expected, errStream.String())
+	if !strings.Contains(outStream.String(), expected) {
+		t.Fatalf("expected %s, got %s.", expected, outStream.String())
 	}
 }
 
@@ -67,8 +67,8 @@ func TestVersion(t *testing.T) {
 	}
 
 	expected := fmt.Sprintf("retry version %s", Version)
-	if !strings.Contains(errStream.String(), expected) {
-		t.Fatalf("expected %s, got %s.", expected, errStream.String())
+	if !strings.Contains(outStream.String(), expected) {
+		t.Fatalf("expected %s, got %s.", expected, outStream.String())
 	}
 }
 
