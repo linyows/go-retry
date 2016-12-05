@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	flag "github.com/docker/docker/pkg/mflag"
+	flag "github.com/linyows/mflag"
 )
 
 const (
