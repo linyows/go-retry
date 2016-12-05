@@ -37,11 +37,13 @@ fi
 
 # Build!
 echo "==> Building..."
-gox \
+"`which gox`" \
     -os="${XC_OS}" \
     -arch="${XC_ARCH}" \
-    -ldflags "-X main.GitCommit ${GIT_COMMIT}${GIT_DIRTY}" \
+    -osarch="!darwin/arm" \
+    -ldflags "-X ${GIT_IMPORT}.GitCommit='${GIT_COMMIT}${GIT_DIRTY}' -X ${GIT_IMPORT}.GitDescribe='${GIT_DESCRIBE}'" \
     -output "pkg/{{.OS}}_{{.Arch}}/${NAME}" \
+    -tags="${BUILD_TAGS}" \
     .
 
 # Move all the compiled things to the $GOPATH/bin
