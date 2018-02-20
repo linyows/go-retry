@@ -2,13 +2,13 @@ language: go
 matrix:
   include:
     - os: linux
-      go: 1.6.x
-    - os: linux
-      go: 1.7.x
-    - os: linux
       go: 1.8.x
     - os: osx
       go: 1.8.x
+    - os: linux
+      go: 1.9.x
+    - os: osx
+      go: 1.9.x
 script:
   - make test
 after_script:
