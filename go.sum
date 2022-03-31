@@ -1,0 +1,6 @@
+github.com/docker/docker v20.10.14+incompatible h1:+T9/PRYWNDo5SZl5qS1r9Mo/0Q8AwxKKPtu9S1yxM0w=
+github.com/docker/docker v20.10.14+incompatible/go.mod h1:eEKB0N0r5NX/I1kEveEz05bcu8tLC/8azJZsviup8Sk=
+github.com/linyows/mflag v0.0.0-20161205075043-c9971547c94d h1:eCTMVmBogZqpho6FN139iXdZZ9oO6P8I0rBtISebb5I=
+github.com/linyows/mflag v0.0.0-20161205075043-c9971547c94d/go.mod h1:Bfa7SKDLPjnPII/GEc4z0+hx+bBAK9Bw7IKDGErvM1A=
+github.com/mattn/go-shellwords v1.0.12 h1:M2zGm7EW6UQJvDeQxo4T51eKPurbeFbe8WtebGE2xrk=
+github.com/mattn/go-shellwords v1.0.12/go.mod h1:EZzvwXDESEeg03EKmM+RmDnNOPKG4lLtQsUlTZDWQ8Y=
