@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	flag "github.com/linyows/mflag"
+	flag "github.com/celtra/mflag"
 )
 
 const (
